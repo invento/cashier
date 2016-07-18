@@ -227,9 +227,18 @@ class Invoice
      */
     public function view(array $data)
     {
-        return View::make('cashier::receipt', array_merge(
-            $data, ['invoice' => $this, 'user' => $this->user]
-        ));
+        $template = 'default';
+
+        if (isset($data['template'])) {
+            if (view()->exists('receipts.'.$data['template'])) {
+                $template = $data['template'];
+            }
+        }
+
+        $data = array_merge($data, ['invoice' => $this, 'user' => $this->user]);
+
+        return view('receipts.'.$template, $data);
+
     }
 
     /**
