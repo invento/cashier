@@ -120,11 +120,11 @@ class SubscriptionBuilder
      * @param  array  $options
      * @return \Laravel\Cashier\Subscription
      */
-    public function create($token = null, array $options = [])
+    public function create($token = null, array $options = [], array $subscriptionPayload = [])
     {
         $customer = $this->getStripeCustomer($token, $options);
 
-        $subscription = $customer->subscriptions->create($this->buildPayload());
+        $subscription = $customer->subscriptions->create($this->buildPayload($subscriptionPayload));
 
         return $this->user->subscriptions()->create([
             'name' => $this->name,
@@ -165,15 +165,15 @@ class SubscriptionBuilder
      *
      * @return array
      */
-    protected function buildPayload()
+    protected function buildPayload(array $subscriptionPayload = [])
     {
-        return array_filter([
+        return array_filter(array_merge($subscriptionPayload, [
             'plan' => $this->plan,
             'quantity' => $this->quantity,
             'coupon' => $this->coupon,
             'trial_end' => $this->getTrialEndForPayload(),
             'tax_percent' => $this->getTaxPercentageForPayload(),
-        ]);
+        ]));
     }
 
     /**
